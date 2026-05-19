@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全能激活脚本生成器 - 宋宇飞</title>
+    <meta name="description" content="Windows/Office KMS 激活脚本生成器，支持 Win11/10/7/Server，自动识别版本。提供系统镜像下载、修复工具、常用软件及数据库下载导航。">
+    <meta name="author" content="宋宇飞 · IT 运维工程师">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="robots" content="index, follow">
+    <!-- Open Graph -->
+    <meta property="og:title" content="全能激活脚本生成器 - 宋宇飞">
+    <meta property="og:description" content="Windows/Office KMS 激活 · 系统镜像下载 · 修复工具 · 软件导航">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <!-- 兼容移动端 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f0f4ff;
+            background: linear-gradient(135deg, #e8ecf8 0%, #dde6fa 30%, #e3edf7 60%, #dfe9f6 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;  /* 统一用列布局，手机端更稳定 */
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ========== 左侧边栏 ========== */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(59, 130, 246, 0.12);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 头像 */
+        .avatar {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.35);
+            animation: avatarFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .bio {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.45);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            text-align: center;
+        }
+
+        /* 联系方式 */
+        .contact-list {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.55);
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .contact-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #333;
+            transform: translateX(4px);
+        }
+
+        .contact-item i {
+            margin-right: 12px;
+            color: #3b82f6;
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* 状态标签 */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            padding: 6px 14px;
+            background: #ecfdf5;
+            color: #059669;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-bottom: 14px;
+        }
+        .status-dot {
+            width: 7px; height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+        }
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+        }
+
+        /* 快捷操作 */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            border: none;
+        }
+        .quick-btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            box-shadow: 0 3px 12px rgba(59,130,246,0.25);
+        }
+        .quick-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(59,130,246,0.35); }
+        .quick-btn-outline {
+            background: rgba(59, 130, 246, 0.06);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+        .quick-btn-outline:hover { background: rgba(59, 130, 246, 0.12); }
+
+        /* 广告位模块 - 轮播 */
+        .ad-module {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+        .ad-label {
+            font-size: 9.5px;
+            color: rgba(0,0,0,0.3);
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .ad-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(139,92,246,0.04));
+            border: 1px dashed rgba(59,130,246,0.18);
+        }
+        .ad-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25,1,0.5,1);
+        }
+        .ad-slide {
+            min-width: 100%;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .ad-slide:hover {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06));
+        }
+        .ad-slide img {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        .ad-text {
+            font-size: 11px;
+            color: rgba(0,0,0,0.45);
+            font-weight: 500;
+        }
+        .ad-tag {
+            font-size: 8.5px;
+            padding: 2px 7px;
+            background: rgba(245,158,11,0.12);
+            color: #d97706;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* 轮播指示器 */
+        .ad-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .ad-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: rgba(59,130,246,0.18);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+        .ad-dot.active {
+            background: #3b82f6;
+            transform: scale(1.3);
+            box-shadow: 0 0 4px rgba(59,130,246,0.35);
+        }
+
+        /* 边栏装饰线 */
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 80px;
+            left: 0;
+            width: 3px;
+            height: 60px;
+            background: linear-gradient(180deg, #3b82f6, transparent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* ========== 主内容区 ========== */
+        .main-wrapper {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            justify-content: stretch;
+            align-items: stretch;
+            padding: 20px;
+            min-height: 0;  /* 允许在flex列中正确收缩 */
+        }
+
+        /* 主卡片 */
+        .card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(30px);
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.12);
+            box-shadow: 0 8px 40px rgba(59, 130, 246, 0.12), 0 2px 10px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 顶部区域 - 左右双列 */
+        .top-section {
+            display: flex;
+            flex-direction: row;
+            min-height: 0;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #bfdbfe 100%);
+            padding: 28px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.12) 0%, transparent 40%);
+            animation: headerGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes headerGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.05) rotate(2deg); }
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.3px;
+        }
+
+        /* 提示区 - 右列 */
+        .tips {
+            padding: 18px 24px;
+            flex: 1;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(139, 92, 246, 0.03) 100%);
+            font-size: 13px;
+            line-height: 1.8;
+            color: rgba(0, 0, 0, 0.6);
+            overflow-y: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .tips ol { padding-left: 18px; margin: 0; }
+        .tips li {
+            margin: 4px 0;
+            color: rgba(0, 0, 0, 0.55);
+            padding: 2px 0;
+            transition: color 0.2s;
+        }
+        .tips li:hover { color: #3b82f6; }
+        .tips li::marker { color: #3b82f6; font-weight: bold; }
+        .tips strong { color: #3b82f6; }
+
+        /* 标签组 - 左侧垂直排列 */
+        .tab-group {
+            width: 180px;
+            flex-shrink: 0;
+            padding: 16px;
+            background: rgba(59, 130, 246, 0.03);
+            border-right: 1px solid rgba(59, 130, 246, 0.08);
+            display: flex;  /* flex 居中 */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 横向滚动标签容器（手机端） */
+        .tab-group-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* 右侧滑动箭头提示 */
+        .scroll-hint-right {
+            right: 2px;
+            text-shadow: -2px 0 8px rgba(255,255,255,0.9), -2px 0 4px rgba(59,130,246,0.15);
+        }
+
+        .tab {
+            display: block;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.55);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent;
+            text-align: center;  /* 标题居中 */
+            margin-bottom: 6px;
+        }
+
+        .tab:last-child {
+            margin-bottom: 0;
+        }
+
+        .tab:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 内容区域 */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* 版本列表 */
+        .version-list {
+            padding: 20px 28px;
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        .version-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 10px 0;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.04);
+            border: 1px solid rgba(59, 130, 246, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .version-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.2);
+            transform: translateX(6px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+        }
+
+        .version-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .version-item .tool-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .version-item .tool-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .version-item .tool-name {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .version-item .tool-desc {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.35);
+            margin-top: 2px;
+        }
+
+        .version-item .tool-info { flex: 1; display: flex; flex-direction: column; }
+
+        /* 网格布局 */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            padding: 20px 28px;
+        }
+
+        .grid-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(59, 130, 246, 0.04);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(59, 130, 246, 0.08);
+        }
+
+        .grid-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.18);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .grid-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .grid-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .grid-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .grid-desc {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            margin-top: 2px;
+        }
+
+        .grid-item-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== 小方块网格样式 ========== */
+        .tile-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 16px;
+            padding: 24px 28px;
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        .tile-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            aspect-ratio: 1;
+            padding: 12px 6px;
+            background: rgba(59, 130, 246, 0.04);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(59, 130, 246, 0.08);
+            text-decoration: none;
+        }
+
+        .tile-item:hover {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.22);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.18);
+        }
+
+        .tile-icon {
+            width: 42px;
+            height: 42px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .tile-icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .tile-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+            text-align: center;
+            line-height: 1.3;
+            word-break: break-all;
+        }
+
+        /* ========== 镜像详情模态框 ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            width: 560px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+            position: relative;
+        }
+        .modal-header .modal-icon {
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+        }
+        .modal-header h2 { font-size: 18px; font-weight: 700; }
+        .modal-header p { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 32px; height: 32px;
+            background: rgba(255,255,255,0.15);
+            border: none; border-radius: 8px;
+            color: white; cursor: pointer;
+            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
+
+        .modal-body { padding: 24px 28px; }
+
+        .iso-versions { display: flex; flex-direction: column; gap: 10px; }
+        .iso-ver-item {
+            padding: 12px 14px;
+            background: rgba(59,130,246,0.04);
+            border: 1px solid rgba(59,130,246,0.08);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .iso-ver-item:hover { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.15); }
+        .iso-ver-name {
+            font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px;
+        }
+        .iso-ver-meta {
+            font-size: 11px; color: rgba(0,0,0,0.45); display: flex; gap: 12px; flex-wrap: wrap;
+        }
+        .iso-ver-meta span { display: flex; align-items: center; gap: 4px; }
+
+        /* 下载按钮 */
+        .btn-dl {
+            padding: 9px 16px; border-radius: 10px;
+            font-size: 12px; font-weight: 600;
+            text-decoration: none; display: inline-flex;
+            align-items: center; gap: 6px; white-space: nowrap;
+            flex-shrink: 0; transition: all 0.25s ease;
+            border: none; cursor: pointer;
+        }
+        .btn-dl-ed2k {
+            background: linear-gradient(135deg, #10b981, #059669); color: white;
+            box-shadow: 0 3px 12px rgba(16,185,129,0.3);
+        }
+        .btn-dl-ed2k:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.45); }
+        .btn-dl-hw {
+            background: linear-gradient(135deg, #f59e0b, #d97706); color: white;
+            box-shadow: 0 3px 12px rgba(245,158,11,0.3);
+        }
+        .btn-dl-hw:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,158,11,0.45); }
+        .btn-dl-ms {
+            background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;
+            box-shadow: 0 3px 12px rgba(59,130,246,0.3);
+        }
+        .btn-dl-ms:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.45); }
+
+        /* 下载按钮组 */
+        .dl-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .dl-btn-group > a {
+            white-space: nowrap;
+        }
+        .btn-dl-copy {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; color: white !important;
+            padding: 9px 12px !important; font-size: 11px !important;
+            box-shadow: 0 3px 10px rgba(124,58,237,0.3) !important;
+            transition: all 0.25s ease !important;
+        }
+        .btn-dl-copy:hover {
+            box-shadow: 0 5px 16px rgba(124,58,237,0.45) !important;
+            transform: translateY(-1px);
+        }
+        .btn-dl-copy.copied {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            box-shadow: 0 3px 10px rgba(5,150,105,0.35) !important;
+            transform: none !important;
+            pointer-events: none;
+        }
+
+        /* 校验值 */
+        .hash-row {
+            margin-top: 5px; padding: 5px 10px;
+            background: rgba(59,130,246,0.05); border-radius: 6px;
+            font-size: 10.5px; font-family: 'Consolas','Monaco',monospace;
+            color: #555; cursor: pointer; transition: all 0.2s;
+            word-break: break-all;
+        }
+        .hash-row:hover { background: rgba(59,130,246,0.1); }
+
+        .modal-footer {
+            padding: 16px 28px 24px;
+            display: flex; gap: 12px;
+        }
+        .btn-modal-primary {
+            flex: 1; padding: 13px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            color: white; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; text-decoration: none;
+            text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-modal-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.4); }
+        .btn-modal-secondary {
+            flex: 1; padding: 13px;
+            background: rgba(59,130,246,0.08);
+            color: #2563eb; border: 1px solid rgba(59,130,246,0.15);
+            border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; text-decoration: none;
+            text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-modal-secondary:hover { background: rgba(59,130,246,0.15); transform: translateY(-2px); }
+
+        .hide { display: none !important; }
+
+        /* 按钮 */
+        .action {
+            padding: 0 28px 20px;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00d69a 0%, #00b07e 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(0, 214, 154, 0.25);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-generate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-generate:hover::before { left: 100%; }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 214, 154, 0.4);
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.3);
+            background: rgba(59, 130, 246, 0.04);
+            border-top: 1px solid rgba(59, 130, 246, 0.08);
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(59, 130, 246, 0.04); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.25); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.4); }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .sidebar { width: 220px; }
+            .main-wrapper { margin-left: 220px; padding: 16px; }
+            .avatar { width: 90px; height: 90px; font-size: 38px; }
+            .name { font-size: 18px; }
+            .grid-layout { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 16px 20px; }
+            .tile-layout { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; padding: 20px 20px; }
+        }
+
+        @media (max-width: 720px) {
+            /* 隐藏侧边栏，主内容区撑满 */
+            body { flex-direction: column; }
+            .sidebar { display: none !important; }
+            .main-wrapper {
+                margin-left: 0;
+                padding: 12px;
+                min-height: 0;
+                flex: 1;
+            }
+            /* card 使用明确高度约束确保内部flex链正常 */
+            .card {
+                min-height: calc(100vh - 24px);
+                max-height: calc(100vh - 24px);
+            }
+            .grid-layout { grid-template-columns: 1fr 1fr; }
+            .tile-layout { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; padding: 16px 14px; }
+        }
+
+        /* 手机端优化：< 576px */
+        @media (max-width: 575px) {
+            .main-wrapper { padding: 8px; }
+            .card {
+                border-radius: 14px;
+                overflow: hidden;
+                min-height: calc(100vh - 16px);
+                max-height: calc(100vh - 16px);
+            }
+
+            /* 顶部双列 → 上下排列 */
+            .top-section { flex-direction: column; border-bottom: none; flex-shrink: 0; }
+            .header {
+                width: 100%;
+                padding: 18px 14px;
+                border-radius: 14px 14px 0 0;
+            }
+            .header h1 { font-size: 17px; letter-spacing: 0.3px; }
+            .header p { font-size: 11px; line-height: 1.6; }
+            .tips { padding: 12px 14px; font-size: 12px; }
+            .tips ol { padding-left: 16px; }
+            .tips li { margin: 3px 0; }
+
+            /* 导航栏 → 横向滚动标签 */
+            .tab-group-wrapper {
+                width: 100%;
+            }
+            .tab-group {
+                width: 100%;
+                flex-shrink: 0;
+                padding: 10px 12px;
+                background: rgba(59, 130, 246, 0.04);
+                border-right: none;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 6px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                position: relative;
+            }
+            .tab-group::-webkit-scrollbar { display: none; }
+            /* 显示右侧滑动箭头 */
+            .scroll-hint-right { opacity: 1; animation: scrollHintPulse 2s ease-in-out infinite; }
+            @keyframes scrollHintPulse {
+                0%, 100% { opacity: 0.5; transform: translateY(-50%) translateX(0); }
+                50% { opacity: 1; transform: translateY(-50%) translateX(4px); }
+            }
+            .tab {
+                white-space: nowrap;
+                padding: 9px 14px;
+                font-size: 12px;
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+
+            /* 主布局 → 列方向，内容区独立滚动 */
+            .body-layout {
+                flex-direction: column !important;
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+            .content-area {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* 列表样式 */
+            .version-list { padding: 14px 14px; }
+            .version-item { padding: 12px 10px; min-height: 54px; }
+            .tool-name { font-size: 13px; }
+            .tool-desc { font-size: 10.5px; }
+            .tool-icon { width: 36px; height: 36px; border-radius: 8px; }
+            .tool-icon img { width: 20px; height: 20px; }
+            .version-item input[type="radio"] { width: 16px; height: 16px; }
+
+            /* ISO网格 */
+            .grid-layout {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px 14px;
+            }
+            .grid-item { padding: 12px 10px; }
+            .grid-name { font-size: 13px; }
+
+            /* 小方块 */
+            .tile-layout { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 10px; padding: 14px 10px; justify-items: center; }
+            .tile-item { width: 66px; aspect-ratio: 1; padding: 8px 4px; border-radius: 12px; }
+            .tile-icon { width: 34px; height: 34px; border-radius: 9px; margin-bottom: 5px; }
+            .tile-icon img { width: 22px; height: 22px; }
+            .tile-name { font-size: 10.5px; }
+
+            /* 按钮 */
+            .action { padding: 0 14px 14px; flex-shrink: 0; }
+            .btn-generate { padding: 13px; font-size: 14px; border-radius: 10px; }
+
+            /* 页脚 */
+            .footer { padding: 12px; font-size: 11px; flex-shrink: 0; }
+
+            /* 侧边栏新增元素 - 手机端适配 */
+            .status-badge { font-size: 10px; padding: 5px 10px; margin-bottom: 10px; }
+            .quick-actions { gap: 4px; margin-top: 10px; padding-top: 10px; }
+            .quick-btn { padding: 7px; font-size: 11px; }
+            .ad-module { margin-top: 10px; padding-top: 10px; }
+            .ad-slide img { max-width: 140px; }
+
+            /* 模态框 */
+            .modal-box {
+                width: 96vw;
+                max-height: 88vh;
+                border-radius: 16px;
+            }
+            .modal-header { padding: 16px 16px; flex-wrap: wrap; }
+            .modal-header h2 { font-size: 16px; }
+            .modal-body { padding: 14px 16px; }
+            .modal-footer { padding: 10px 16px 16px; flex-direction: column; gap: 8px; }
+            .btn-modal-primary, .btn-modal-secondary { padding: 11px; font-size: 13px; border-radius: 10px; }
+            .dl-btn-group > a { font-size: 10.5px; padding: 7px 8px; }
+            .iso-ver-item { padding: 10px 12px; }
+            .hash-row { font-size: 10px; padding: 4px 8px; }
+        }
+
+        /* 无障碍：焦点样式 */
+        *:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        /* 减小 motion：不依赖用户偏好 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+    <!-- 引入 Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" crossorigin="anonymous">
+    <script>
+        (function(){
+            setTimeout(function(){
+                var el = document.createElement('i');
+                el.className = 'fas fa-check';
+                el.style.cssText = 'position:absolute;visibility:hidden';
+                document.body.appendChild(el);
+                var cs = window.getComputedStyle(el);
+                document.body.removeChild(el);
+                if ((cs.fontFamily || '').indexOf('Font Awesome') === -1) {
+                    var lk = document.createElement('link');
+                    lk.rel = 'stylesheet';
+                    lk.href = 'https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+                    document.head.appendChild(lk);
+                }
+            }, 500);
+        })();
+    </script>
+</head>
+
+<body>
+    <!-- 左侧个人信息边栏 -->
+    <div class="sidebar" role="complementary" aria-label="个人信息侧边栏">
+        <div class="avatar" aria-hidden="true">宋</div>
+        <div class="name">Mask</div>
+        <div class="bio" style="display:none;">用自动化思维解决系统难题<br>用标准化沉淀运维经验</div>
+
+        <!-- 在线状态 -->
+        <div style="text-align:center;">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>在线 · 响应 &lt; 24h</span>
+            </div>
+        </div>
+
+        <div class="contact-list">
+            <div class="contact-item" aria-label="电子邮箱">
+                <i class="fas fa-envelope" aria-hidden="true"></i>
+                <span>yufeisong002@Gmail.com</span>
+            </div>
+            <div class="contact-item" aria-label="教育背景" onclick="window.open('https://www.ytbu.edu.cn/','_blank')" style="cursor:pointer;">
+                <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                <span>YTBU</span>
+            </div>
+            <div class="contact-item" onclick="window.open('https://github.com/mask796','_blank')" style="cursor:pointer;" aria-label="GitHub">
+                <i class="fab fa-github" aria-hidden="true"></i>
+                <span>GitHub</span>
+            </div>
+            <div class="contact-item" onclick="window.open('https://blog.csdn.net/','_blank')" style="cursor:pointer;" aria-label="技术博客">
+                <i class="fas fa-blog" aria-hidden="true"></i>
+                <span>技术博客</span>
+            </div>
+            <div class="contact-item" aria-label="所在城市">
+                <i class="fas fa-location-dot" aria-hidden="true"></i>
+                <span>云南 · 昆明</span>
+            </div>
+        </div>
+
+        <!-- 快捷操作 -->
+        <div class="quick-actions">
+            <button class="quick-btn quick-btn-primary" onclick="alert('欢迎反馈问题！\n邮箱：yufeisong002@Gmail.com\n微信：SongYufei_IT')">
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> 反馈问题
+            </button>
+        </div>
+
+        <!-- 广告位展示模块 - 轮播 -->
+        <div class="ad-module">
+            <div class="ad-label">广告位</div>
+            <div class="ad-carousel">
+                <div class="ad-track" id="adTrack">
+                    <a href="https://cloud.tencent.com/act/pro/server-group-buy?from=12345" target="_blank" rel="noopener noreferrer" class="ad-slide" title="点击查看详情">
+                        <img src="https://imgcache.qq.com/qcloud/tcloud-portal/static/img/tencent-cloud-logo.4e9f.png" alt="腾讯云" onerror="this.style.display='none'">
+                        <div class="ad-text">腾讯云服务器 · 限时优惠</div>
+                        <span class="ad-tag">推荐</span>
+                    </a>
+                    <a href="https://cloud.tencent.com/cdn?from=12345" target="_blank" rel="noopener noreferrer" class="ad-slide" title="点击查看详情">
+                        <img src="https://imgcache.qq.com/qcloud/tcloud-portal/static/img/product/icon-cdn.png" alt="CDN加速" onerror="this.style.display='none';this.nextElementSibling.textContent='🌐 CDN加速'">
+                        <div class="ad-text">腾讯云 CDN · 全球加速</div>
+                        <span class="ad-tag">热门</span>
+                    </a>
+                    <a href="https://cloud.tencent.com/act/pro/cos?from=12345" target="_blank" rel="noopener noreferrer" class="ad-slide" title="点击查看详情">
+                        <img src="https://imgcache.qq.com/qcloud/tcloud-portal/static/img/product/icon-cos.svg" alt="对象存储" onerror="this.style.display='none'">
+                        <div class="ad-text">腾讯云 COS · 对象存储</div>
+                        <span class="ad-tag">新品</span>
+                    </a>
+                </div>
+            </div>
+            <div class="ad-dots" id="adDots"></div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-wrapper">
+    <div class="card">
+        <!-- 顶部左右双列 -->
+        <div class="top-section">
+            <div class="header">
+                <h1>🚀 全能激活脚本生成器</h1>
+                <p>Windows / Office 激活<br>系统镜像 · 修复工具 · 软件下载</p>
+            </div>
+
+            <div class="tips">
+                <ol>
+                    <li>选择版本 → 点击生成 → 直接下载 .bat → 右键管理员运行</li>
+                    <li>激活失败可使用【清除激活】脚本重置后重试</li>
+                    <li>Office 无法激活/残留可使用【彻底卸载】工具</li>
+                    <li>KMS 激活有效期 180 天，自动续期</li>
+                    <li><strong>Windows 镜像</strong>点击卡片弹出详情，<strong>ed2k链接直接唤起迅雷下载</strong></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 左右两栏布局 -->
+        <div class="body-layout" style="display: flex; flex: 1; min-height: 0;">
+            <!-- 左侧功能导航 -->
+            <div class="tab-group-wrapper">
+                <div class="tab-group" role="tablist" aria-label="功能导航">
+                    <button class="tab active" data-type="win" role="tab" aria-selected="true">Windows</button>
+                    <button class="tab" data-type="office" role="tab" aria-selected="false">Office</button>
+                    <button class="tab" data-type="iso" role="tab" aria-selected="false">镜像</button>
+                    <button class="tab" data-type="tools" role="tab" aria-selected="false">修复工具</button>
+                    <button class="tab" data-type="soft" role="tab" aria-selected="false">常用软件</button>
+                    <button class="tab" data-type="db" role="tab" aria-selected="false">数据库</button>
+                </div>
+                <!-- 右侧滑动箭头提示 -->
+                <span class="scroll-hint scroll-hint-right" aria-hidden="true">›</span>
+            </div>
+
+            <!-- 右侧内容区域 -->
+            <div class="content-area">
+                <div class="version-list" id="versionList"></div>
+                <div class="grid-layout hide" id="gridLayout"></div>
+                <div class="tile-layout hide" id="tileLayout"></div>
+
+                <div class="action">
+                    <button class="btn-generate" id="btn1" aria-label="生成并下载激活脚本">生成并下载脚本</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            仅供学习使用 · 请支持正版软件
+            <span style="margin-left:12px;opacity:0.6;">·</span>
+            <span style="margin-left:8px;color:#3b82f6;font-weight:500;">📊 累计激活 200+ 次</span>
+            <span style="margin-left:12px;opacity:0.6;">|</span>
+            <a href="https://cloud.tencent.com/" target="_blank" rel="noopener noreferrer" style="margin-left:8px;color:rgba(59,130,246,0.7);text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px;" title="腾讯云"><img src="https://cloud.tencent.com/favicon.ico" alt="" style="width:14px;height:14px;" onerror="this.style.display='none'"> 由腾讯云支持</a>
+        </div>
+    </div>
+
+    <!-- 镜像详情模态框 -->
+    <div class="modal-overlay" id="isoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalSubtitle">
+        <div class="modal-box" role="document">
+            <div class="modal-header">
+                <div class="modal-icon" id="modalIcon" aria-hidden="true">💿</div>
+                <div>
+                    <h2 id="modalTitle">Windows 镜像详情</h2>
+                    <p id="modalSubtitle">官方原版 ISO</p>
+                </div>
+                <button class="modal-close" id="btnModalClose" aria-label="关闭弹窗">&#x2715;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="iso-versions" id="modalVersions"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-secondary" id="btnCopyAll" style="flex:1;" aria-label="复制镜像全部信息">
+                    <i class="fas fa-copy" aria-hidden="true"></i> 复制全部信息
+                </button>
+                <button class="btn-modal-primary" id="btnCloseModal" style="flex:1;" aria-label="关闭弹窗">
+                    <i class="fas fa-times" aria-hidden="true"></i> 关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ===================================================
+           ========== 全局配置 & 常量 ==========
+           =================================================== */
+        const logos = {
+            chrome: "https://api.iconify.design/logos:chrome.svg",
+            edge: "https://api.iconify.design/logos:microsoft-edge.svg",
+            wechat: "https://api.iconify.design/simple-icons:wechat.svg?color=%2307C160",
+            qq: "https://api.iconify.design/simple-icons:tencentqq.svg?color=%23EB1923",
+            wps: "https://api.iconify.design/mdi:file-document-edit-outline.svg?color=%23FF5722",
+            winrar: "https://api.iconify.design/vscode-icons:file-type-zip.svg",
+            notepad: "https://api.iconify.design/simple-icons:notepadplusplus.svg?color=%2390E59A",
+            vscode: "https://api.iconify.design/logos:visual-studio-code.svg",
+            todesk: "https://api.iconify.design/mdi:remote-desktop.svg?color=%2300B4FF",
+            todesk: "https://api.iconify.design/mdi:remote-desktop.svg?color=%2300B4FF",
+            tencentpc: "https://www.tencent.com/img/index/tencent_logo.png",
+            doubao: "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/favicon/64x64.png",
+            douyin: "https://lf1-cdn-tos.bytegoofy.com/goofy/ies/douyin_web/public/favicon.ico",
+            ima: "https://meeting.tencent.com/favicon.ico",
+            xunlei: "https://www.xunlei.com/favicon.ico",
+            uuremote: "https://uu.163.com/favicon.ico",
+            netease_mail: "https://mail.163.com/favicon.ico",
+            browser_360: "https://browser.360.cn/favicon.ico",
+            huorong: "https://www.huorong.cn/favicon.ico",
+            mysql: "https://api.iconify.design/logos:mysql.svg",
+            sqlserver: "https://api.iconify.design/simple-icons:microsoftsqlserver.svg?color=%23CC2927",
+            postgresql: "https://api.iconify.design/logos:postgresql.svg",
+            windows: "https://api.iconify.design/mdi:windows.svg?color=%230078D4",
+            office: "https://api.iconify.design/mdi:microsoft-office.svg?color=%23D83B01"
+        };
+
+        const data = {
+            win: {
+                list: [
+                    {name: "Windows 11", val: "WIN11", icon: "img", img: logos.windows, desc: "智能识别全版本（专业/企业/教育/LTSC）"},
+                    {name: "Windows 10", val: "WIN10", icon: "img", img: logos.windows, desc: "智能识别全版本（专业/企业/教育/LTSC）"},
+                    {name: "Windows 7", val: "WIN7", icon: "img", img: logos.windows, desc: "旗舰版/专业版"},
+                    {name: "Server 2019 / 2022 / 2025", val: "SRV", icon: "img", img: logos.windows, desc: "标准版/数据中心版"},
+                ], mode: "bat"
+            },
+            office: {
+                list: [
+                    {name: "Office 2021", val: "OFF2021", icon: "img", img: logos.office, desc: "最新永久授权版本"},
+                    {name: "Office 2019", val: "OFF2019", icon: "img", img: logos.office, desc: "稳定成熟版本"},
+                    {name: "Office 2016", val: "OFF2016", icon: "img", img: logos.office, desc: "经典兼容版本"},
+                    {name: "Office 365", val: "OFF365", icon: "img", img: logos.office, desc: "订阅制云端服务"},
+                ], mode: "bat"
+            },
+            iso: {
+                list: [
+                    {name: "Windows 11 25H2", faIcon: "fa-compact-disc", faColor: "#0078D4", desc: "最新版功能更新", detail: {
+                        icon: "🪟",
+                        versions: [
+                            {name: "消费者版 (家庭/专业/教育/企业)", size: "约 6.5 GB", msdl: "https://www.microsoft.com/zh-cn/software-download/windows11"},
+                        ]
+                    }},
+                    {name: "Windows 11 24H2", faIcon: "fa-compact-disc", faColor: "#0078D4", desc: "稳定版 · MSDN原版ISO", detail: {
+                        icon: "🪟",
+                        versions: [
+                            {name: "消费者版 (2025.01更新)", size: "6.11 GB", sha1: "2652425EB1E3BE6399DC1A2B7686C1F3C34659BA", file: "zh-cn_windows_11_consumer_editions_version_24h2_updated_jan_2025_x64_dvd_7a8e5a29.iso", ed2k: "ed2k://|file|zh-cn_windows_11_consumer_editions_version_24h2_updated_jan_2025_x64_dvd_7a8e5a29.iso|6557558784|6DBEA84EEFC752C2FC2367E697325252|/", msdl: "https://www.microsoft.com/zh-cn/software-download/windows11"},
+                        ]
+                    }},
+                    {name: "Win11 LTSC 2024", faIcon: "fa-shield-halved", faColor: "#059669", desc: "长期服务版 · 超精简无广告", detail: {
+                        icon: "🛡️",
+                        versions: [
+                            {name: "企业 LTSC 2024 x64", size: "4.92 GB", sha1: "AB7CD740E6CD495A69E3A90FCD7FB56BA0C5C62E", file: "zh-cn_windows_11_enterprise_ltsc_2024_x64_dvd_cff9cd2d.iso", ed2k: "ed2k://|file|zh-cn_windows_11_enterprise_ltsc_2024_x64_dvd_cff9cd2d.iso|5287520256|D6E4FE0BA5FD8A2F22FC9C0326481791|/", msdl: "https://www.microsoft.com/zh-cn/evalcenter/evaluate-windows-11-enterprise-ltsc-2024"},
+                        ]
+                    }},
+                    {name: "Windows 10 22H2", faIcon: "fa-compact-disc", faColor: "#0078D4", desc: "最终版本 · 支持至2027年", detail: {
+                        icon: "🪟",
+                        versions: [
+                            {name: "消费者版 x64 (2025.02更新)", size: "6.69 GB", sha1: "A2D555B56B4331997346A83196D8715993F5ED2D", file: "zh-cn_windows_10_consumer_editions_version_22h2_updated_feb_2025_x64_dvd_16fa7261.iso", ed2k: "ed2k://|file|zh-cn_windows_10_consumer_editions_version_22h2_updated_feb_2025_x64_dvd_16fa7261.iso|7182641152|6FF10540756D6C3ABADBC75CE1E1F021|/", msdl: "https://www.microsoft.com/zh-cn/software-download/windows10ISO"},
+                        ]
+                    }},
+                    {name: "Win10 LTSC 2021", faIcon: "fa-shield-halved", faColor: "#059669", desc: "长期服务版 · 极度精简", detail: {
+                        icon: "🛡️",
+                        versions: [
+                            {name: "LTSC 2021 企业版 x64", size: "4.70 GB", sha1: "C19D7DAFBAFEB26C36E31D97C465E87C7A6E8A4C", file: "SW_DVD9_WIN_ENT_LTSC_2021_64BIT_ChnSimp_MLF_X22-84402.ISO", ed2k: "ed2k://|file|SW_DVD9_WIN_ENT_LTSC_2021_64BIT_ChnSimp_MLF_X22-84402.ISO|5044211712|1555B7DCA052B5958EE68DB58A42408D|/", msdl: "https://www.microsoft.com/zh-cn/evalcenter/evaluate-windows-10-enterprise-ltsc-2021"},
+                        ]
+                    }},
+                    {name: "Windows 7 SP1", faIcon: "fa-compact-disc", faColor: "#F59E0B", desc: "旗舰版 · 经典老系统", detail: {
+                        icon: "📀",
+                        versions: [
+                            {name: "旗舰版 SP1 x64", size: "3.19 GB", sha1: "2CE0B2DB34D76ED3F697CE148CB7594432405E23", file: "cn_windows_7_ultimate_with_sp1_x64_dvd_u_677408.iso", ed2k: "ed2k://|file|cn_windows_7_ultimate_with_sp1_x64_dvd_u_677408.iso|3420553296|B58535A7E3890DE784225DCD0E6F9069D|/"},
+                        ]
+                    }},
+                    {name: "Server 2025", faIcon: "fa-server", faColor: "#6366F1", desc: "最新服务器 · 180天评估", detail: {
+                        icon: "🖥️",
+                        versions: [
+                            {name: "Server 2025 评估版", size: "~5.5 GB", sha1: "见微软评估中心", file: "Windows Server 2025 ISO", dl: "https://www.microsoft.com/zh-cn/evalcenter/evaluate-windows-server-2025", msdl: "https://www.microsoft.com/zh-cn/evalcenter/evaluate-windows-server-2025"},
+                        ]
+                    }},
+                    {name: "Server 2022", faIcon: "fa-server", faColor: "#6366F1", desc: "稳定服务器 · MSDN原版", detail: {
+                        icon: "🖥️",
+                        versions: [
+                            {name: "标准/数据中心版 x64", size: "5.41 GB", sha1: "0DF46441DD01F99459FB75BDB732E7904900A0D7", file: "zh-cn_windows_server_2022_x64_dvd_6c73507d.iso", ed2k: "ed2k://|file|zh-cn_windows_server_2022_x64_dvd_6c73507d.iso|5805221888|8D72A80C08CEFD49AB931C0AD08EE69C|/", msdl: "https://www.microsoft.com/zh-cn/evalcenter/evaluate-windows-server-2022"},
+                        ]
+                    }},
+                    // ==================== Linux 镜像 ====================
+                    {name: "Ubuntu 24.04 LTS", faIcon: "fa-brands fa-ubuntu", faColor: "#E95420", desc: "长期支持版 · 2025.04更新", detail: {
+                        icon: "🐧",
+                        versions: [
+                            {name: "桌面版 Desktop amd64", size: "5.15 GB", dl: "https://ubuntu.com/download/desktop", msdl: "https://ubuntu.com/download"},
+                            {name: "服务器版 Server amd64", size: "2.64 GB", dl: "https://ubuntu.com/download/server", msdl: "https://ubuntu.com/download"},
+                        ]
+                    }},
+                    {name: "Debian 12 Bookworm", faIcon: "fa-brands fa-debian", faColor: "#A80030", desc: "稳定可靠 · 通用发行版", detail: {
+                        icon: "🌀",
+                        versions: [
+                            {name: "网络安装 netinst amd64", size: "~380 MB", dl: "https://www.debian.org/distrib/netinst", msdl: "https://www.debian.org/distrib/"},
+                            {name: "完整安装 DVD amd64", size: "3.85 GB", dl: "https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/", msdl: "https://www.debian.org/distrib/"},
+                        ]
+                    }},
+                    {name: "CentOS Stream 9", faIcon: "fa-brands fa-centos", faColor: "#932279", desc: "RHEL 上游 · 企业级稳定", detail: {
+                        icon: "🐙",
+                        versions: [
+                            {name: "Stream 9 DVD x86_64", size: "~10 GB", dl: "https://www.centos.org/download/", msdl: "https://www.centos.org/download/"},
+                            {name: "Stream 9 Boot x86_64", size: "~900 MB", dl: "https://www.centos.org/download/", msdl: "https://www.centos.org/download/"},
+                        ]
+                    }},
+                    {name: "Rocky Linux 9", faIcon: "fa-solid fa-mountain-city", faColor: "#10B981", desc: "CentOS 8 继任者 · RHEL 兼容", detail: {
+                        icon: "⛰️",
+                        versions: [
+                            {name: "Rocky 9 DVD x86_64", size: "~10 GB", dl: "https://rockylinux.org/download/", msdl: "https://rockylinux.org/download/"},
+                            {name: "Rocky 9 Minimal x86_64", size: "~2 GB", dl: "https://rockylinux.org/download/", msdl: "https://rockylinux.org/download/"},
+                        ]
+                    }},
+                ], mode: "grid"
+            },
+            tools: {
+                list: [
+                    {name: "清除 Windows 激活", val: "CLEARWIN", icon: "🔑", desc: "重置激活状态，解决激活失败问题"},
+                    {name: "彻底卸载 Office", val: "UNINSTALLOFFICE", icon: "📦", desc: "完全移除 Office 所有版本和残留"},
+                    {name: "深度清理 C 盘", val: "CLEANC", icon: "🧹", desc: "18项全面清理 · 临时文件/缓存/回收站/浏览器/DNS等"},
+                ], mode: "bat"
+            },
+            soft: {
+                list: [
+                    {name: "Chrome", url: "https://www.google.com/chrome/", logo: logos.chrome},
+                    {name: "Edge", url: "https://www.microsoft.com/zh-cn/edge", logo: logos.edge},
+                    {name: "微信", url: "https://weixin.qq.com/", logo: logos.wechat},
+                    {name: "QQ", url: "https://im.qq.com/", logo: logos.qq},
+                    {name: "豆包", url: "https://www.doubao.com/", logo: logos.doubao},
+                    {name: "抖音", url: "https://www.douyin.com/", logo: logos.douyin},
+                    {name: "腾讯会议", url: "https://meeting.tencent.com/", logo: logos.ima},
+                    {name: "迅雷", url: "https://www.xunlei.com/", logo: logos.xunlei},
+                    {name: "UU远程", url: "https://uu.163.com/", logo: logos.uuremote},
+                    {name: "网易邮箱大师", url: "https://dashi.163.com/", logo: logos.netease_mail},
+                    {name: "WPS", url: "https://www.wps.cn/", logo: logos.wps},
+                    {name: "WinRAR", url: "https://www.win-rar.com/", logo: logos.winrar},
+                    {name: "ToDesk", url: "https://www.todesk.com/", logo: logos.todesk},
+                    {name: "电脑管家", url: "https://guanjia.qq.com/", logo: logos.tencentpc},
+                    {name: "360浏览器", url: "https://browser.360.cn/", logo: logos.browser_360},
+                    {name: "火绒安全", url: "https://www.huorong.cn/", logo: logos.huorong},
+                ], mode: "tile"
+            },
+            db: {
+                list: [
+                    {name: "MySQL 8.0", url: "https://dev.mysql.com/downloads/mysql/", logo: logos.mysql},
+                    {name: "MySQL 5.7", url: "https://dev.mysql.com/downloads/mysql/5.7.html", logo: logos.mysql},
+                    {name: "SQL Server", url: "https://www.microsoft.com/zh-cn/sql-server/sql-server-downloads", logo: logos.sqlserver},
+                    {name: "PostgreSQL", url: "https://www.postgresql.org/download/", logo: logos.postgresql},
+                ], mode: "tile"
+            }
+        };
+
+        const kmsHost = "kms.03k.org";
+
+        /* ========== 脚本模板（智能全版本支持） ========== */
+        const scriptTemplates = {
+            'SRV':   () => ({ fileName: 'Server 激活.bat',     content: `@echo off\ntitle Server KMS Activation\nfor /f "tokens=3 delims=. " %%v in ('ver') do (set WINVER=%%v)\nif "%WINVER%"=="10" (\n  slmgr /ipk WX4NM-KYWYW-4FW3C-82BVH-7VC08\n) else if "%WINVER%" geq "10" (\n  slmgr /ipk DPKNT-NVIVK-G867X-QFCRK-PRWTT\n) else (\n  slmgr /ipk N69G4-B89J2-4G8F4-WWYCC-J464C\n)\nslmgr /skms ${kmsHost} && slmgr /ato\npause` }),
+
+            'WIN11': () => ({ fileName: 'Windows 11 激活.bat', content: `@echo off\ntitle Windows 11 KMS Activation\nfor /f "tokens=3 " %%a in ('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" /v EditionID 2^>nul ^| findstr "EditionID"') do set EDITION=%%a\nif /i "%EDITION%"=="Professional" slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nif /i "%EDITION%"=="ProfessionalEducation" slmgr /ipk 2T7WQ-FVK9G-7YX8W-TYG2P-KRRBG\nif /i "%EDITION%"=="Enterprise" slmgr /ipk W3WN7-YW8R4-V9GGP-GD2V6-XF3YF\nif /i "%EDITION%"=="EnterpriseLTSC" slmgr /ipk M7XTQ-FN8P6-TTKYV-9D4CC-J462D\nif /i "%EDITION%"=="Education" slmgr /ipk NW6C2-QMPVW-D7KKK-3GKT6-VCFB2\nif /i "%EDITION%"=="Core" slmgr /ipk TX9XD-98N7V-6WMQ6-BX7FG-H8Q99\nif not defined EDITION echo 未识别到系统版本，将使用默认密钥... && slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nslmgr /skms ${kmsHost}\nslmgr /ato\necho 激活完成！\npause` }),
+
+            'WIN10': () => ({ fileName: 'Windows 10 激活.bat', content: `@echo off\ntitle Windows 10 KMS Activation\nfor /f "tokens=3 " %%a in ('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" /v EditionID 2^>nul ^| findstr "EditionID"') do set EDITION=%%a\nif /i "%EDITION%"=="Professional" slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nif /i "%EDITION%"=="ProfessionalN" slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nif /i "%EDITION%"=="ProfessionalEducation" slmgr /ipk NJ447-VWMVT-QST88-YG2K4-38TTG\nif /i "%EDITION%"=="ProfessionalWorkstation" slmgr /ipk NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J\nif /i "%EDITION%"=="Enterprise" slmgr /ipk W3WN7-YW8R4-V9GGP-GD2V6-XF3YF\nif /i "%EDITION%"=="EnterpriseLTSC" slmgr /ipk M7XTQ-FN8P6-TTKYV-9D4CC-J462D\nif /i "%EDITION%"=="Education" slmgr /ipk NW6C2-QMPVW-D7KKK-3GKT6-VCFB2\nif /i "%EDITION%"=="Core" slmgr /ipk TX9XD-98N7V-6WMQ6-BX7FG-H8Q99\nif not defined EDITION echo 未识别到系统版本，将使用默认密钥... && slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX\nslmgr /skms ${kmsHost}\nslmgr /ato\necho 激活完成！\npause` }),
+
+            'WIN7':  () => ({ fileName: 'Windows 7 激活.bat',  content: `@echo off\ntitle Windows 7 KMS Activation\nfor /f "tokens=3 " %%a in ('reg query "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" /v EditionID 2^>nul ^| findstr "EditionID"') do set EDITION=%%a\nif /i "%EDITION%"=="Professional" slmgr /ipk FJ82H-XT6CR-J8D7P-XQJJ2-GPDD4\nif /i "%EDITION%"=="Ultimate" slmgr /ipk D9RHV-JG8XC-C77H2-319F6-T8DVM\nif /i "%EDITION%"=="Enterprise" slmgr /ipk 33PXH-7Y6KF-2VJC9-XBBR8-HVTHH\nif not defined EDITION echo 未识别到系统版本，将使用默认密钥... && slmgr /ipk FJ82H-XT6CR-J8D7P-XQJJ2-GPDD4\nslmgr /skms ${kmsHost}\nslmgr /ato\necho 激活完成！请重启电脑。\npause` }),
+
+            // Office Activation (含 GVLK 安装)
+            'OFF2021': () => ({ fileName: 'Office 2021 激活.bat', content: `@echo off\nif exist "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" (\n  cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:YG9N8-93VCB-WX9TT-VP8J7-G6CVT && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /act\n) else (\n  cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:YG9N8-93VCB-WX9TT-VP8J7-G6CVT && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /act\n)\necho Done!\npause` }),
+            'OFF2019': () => ({ fileName: 'Office 2019 激活.bat', content: `@echo off\nif exist "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" (\n  cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:NMMKJ-6RK4F-KMJVX-544D4Y-XH83V && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /act\n) else (\n  cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:NMMKJ-6RK4F-KMJVX-544D4Y-XH83V && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /act\n)\necho Done!\npause` }),
+            'OFF2016': () => ({ fileName: 'Office 2016 激活.bat', content: `@echo off\nif exist "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" (\n  cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:XQNVK-8JYDB-WJ9W3-YJ8YR-WFG99 && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /act\n) else (\n  cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:XQNVK-8JYDB-WJ9W3-YJ8YR-WFG99 && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /act\n)\necho Done!\npause` }),
+            'OFF365': () => ({ fileName: 'Office 365 激活.bat', content: `@echo off\nif exist "C:\\Program Files\\Microsoft Office\\root\\Office16\\OSPP.VBS" (\n  cscript "C:\\Program Files\\Microsoft Office\\root\\Office16\\OSPP.VBS" /inpkey:YC7DK-G2NP3-2QQC3-J6H88-GVGXT && cscript "C:\\Program Files\\Microsoft Office\\root\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files\\Microsoft Office\\root\\Office16\\OSPP.VBS" /act\n) else if exist "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" (\n  cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:YC7DK-G2NP3-2QQC3-J6H88-GVGXT && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files\\Microsoft Office\\Office16\\OSPP.VBS" /act\n) else (\n  cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /inpkey:YC7DK-G2NP3-2QQC3-J6H88-GVGXT && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /sethst:${kmsHost} && cscript "C:\\Program Files (x86)\\Microsoft Office\\Office16\\OSPP.VBS" /act\n)\necho Done!\npause` }),
+
+            // Tool scripts
+            'CLEARWIN':       () => ({ fileName: '清除激活.bat',      content: `@echo off\nslmgr /upk && slmgr /cpky && slmgr /rearm\necho 清除完成！请重启电脑后重试激活。\npause` }),
+            'UNINSTALLOFFICE':() => ({ fileName: '卸载Office.bat',    content: `@echo off\ntaskkill /f /im winword.exe >nul 2>&1 & taskkill /f /im excel.exe >nul 2>&1 & taskkill /f /im powerpnt.exe >nul 2>&1\nif exist "C:\\Program Files\\Microsoft Office\\root\\Client\\officeclicktorun.exe" (\n  "C:\\Program Files\\Microsoft Office\\root\\Client\\officeclicktorun.exe" /Scenario=UninstallScenario /Quiet\n) else if exist "C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe" (\n  "C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe" scenario=install baseurl="C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun" platform=x64 version=15 culture=en-us productstoremove=O365ProPlusRetail_en-us_x-none\n) else if exist "C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe" (\n  "C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe" scenario=install baseurl="C:\\Program Files (x86)\\Common Files\\Microsoft Shared\\ClickToRun" platform=x86 version=15 culture=en-us productstoremove=O365ProPlusRetail_en-us_x-none\n) else (\necho 未检测到已安装的 Office，或为 MSI 安装版本。\necho 如需手动卸载，请前往 控制面板→程序和功能\n)\necho 卸载完成！建议重启后重装。\npause` }),
+            'CLEANC':          () => ({ fileName: 'C盘清理工具_完整版.bat', content: `@echo off\nchcp 936 >nul 2>&1\ntitle C盘清理工具 - 完整版 (by Mask)\nmode con cols=100 lines=50\nfltmc >nul 2>&1 || (\n    echo 正在请求管理员权限...\n    powershell -Command "Start-Process cmd -ArgumentList '/c \`%~f0\'' -Verb RunAs" >nul 2>&1\n    exit /b\n)\nsetlocal enabledelayedexpansion\ncls\necho.\necho ============================================================\necho                     C 盘 清 理 工 具 (完整版)\necho                         共计 18 项清理任务\necho ============================================================\necho.\nset OK=0\nset SKIP=0\ncall :log "[01/18] 用户临时文件 (%%TEMP%%)"\ndel /f /s /q "%temp%\\*" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[02/18] 系统临时文件 (Windows\\\\Temp)"\ndel /f /s /q "C:\\Windows\\Temp\\*" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[03/18] 预读取文件 (Prefetch)"\ndel /f /q "C:\\Windows\\Prefetch\\*.pf" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[04/18] Windows更新下载缓存"\nrd /s /q "C:\\Windows\\SoftwareDistribution\\Download" >nul 2>&1 && md "C:\\Windows\\SoftwareDistribution\\Download" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[05/18] 缩略图缓存"\ndel /f /q "%localappdata%\\Microsoft\\Windows\\Explorer\\thumbcache_*.db" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[06/18] 图标缓存"\ndel /f /q "%localappdata%\\IconCache.db" >nul 2>&1 && del /f /q "%localappdata%\\Microsoft\\Windows\\Explorer\\iconcache_*.db" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[07/18] 错误报告文件 (WER)"\nrd /s /q "%programdata%\\Microsoft\\Windows\\WER" >nul 2>&1 && md "%programdata%\\Microsoft\\Windows\\WER" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\nrd /s /q "%localappdata%\\Microsoft\\Windows\\WER" >nul 2>&1 && md "%localappdata%\\Microsoft\\Windows\\WER" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[08/18] 小转储内存 (Minidump)"\ndel /f /q "C:\\Windows\\Minidump\\*.dmp" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[09/18] Windows日志文件"\ndel /f /q "C:\\Windows\\Logs\\CBS\\*.log" >nul 2>&1\ndel /f /q "C:\\Windows\\Logs\\DISM\\*.log" >nul 2>&1\ndel /f /q "C:\\Windows\\Temp\\*.log" >nul 2>&1\nset /a OK+=1\ncall :log "[10/18] 浏览器缓存 - IE"\nrd /s /q "%localappdata%\\Microsoft\\Windows\\INetCache" >nul 2>&1 && md "%localappdata%\\Microsoft\\Windows\\INetCache" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[11/18] 浏览器缓存 - Edge"\nrd /s /q "%localappdata%\\Microsoft\\Edge\\User Data\\Default\\Cache" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\nrd /s /q "%localappdata%\\Microsoft\\Edge\\User Data\\Default\\Code Cache" >nul 2>&1\nrd /s /q "%localappdata%\\Microsoft\\Edge\\User Data\\Default\\Service Worker\\CacheStorage" >nul 2>&1\nrd /s /q "%localappdata%\\Microsoft\\Edge\\User Data\\Default\\GPUCache" >nul 2>&1\ncall :log "[12/18] 浏览器缓存 - Chrome"\nfor /d %%d in ("%localappdata%\\Google\\Chrome\\User Data\\*") do if exist "%%d\\Cache" rd /s /q "%%d\\Cache" >nul 2>&1\nfor /d %%d in ("%localappdata%\\Google\\Chrome\\User Data\\*") do if exist "%%d\\Code Cache" rd /s /q "%%d\\Code Cache" >nul 2>&1\nfor /d %%d in ("%localappdata%\\Google\\Chrome\\User Data\\*") do if exist "%%d\\Service Worker\\CacheStorage" rd /s /q "%%d\\Service Worker\\CacheStorage" >nul 2>&1\nset /a OK+=1\ncall :log "[13/18] 浏览器缓存 - Firefox"\nfor /d %%p in ("%appdata%\\Mozilla\\Firefox\\Profiles\\*") do rd /s /q "%%p\\cache2" >nul 2>&1\nset /a OK+=1 || set /a SKIP+=1\ncall :log "[14/18] 字体缓存"\nrd /s /q "C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache" >nul 2>&1 && md "C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache" >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[15/18] Windows搜索索引"\ndel /f /q "%programdata%\\Microsoft\\Windows\\Data\\*.wid" >nul 2>&1\ndel /f /q "%programdata%\\Microsoft\\Windows\\Data\\*.ci" >nul 2>&1\ndel /f /q "%programdata%\\Microsoft\\Windows\\Data\\*.fci" >nul 2>&1\ndel /f /q "%programdata%\\Microsoft\\Windows\\Data\\*.wci" >nul 2>&1\nset /a OK+=1\ncall :log "[16/18] DNS缓存"\nipconfig /flushdns >nul 2>&1 && set /a OK+=1 || set /a SKIP+=1\ncall :log "[17/18] 回收站 (所有盘符)"\nfor %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (\n    if exist "%%d:\\$Recycle.Bin" rd /s /q "%%d:\\$Recycle.Bin" >nul 2>&1\n)\nset /a OK+=1\ncall :log "[18/18] 启动磁盘清理向导"\nstart "" cleanmgr\nset /a OK+=1\necho.\necho ============================================================\necho.\necho                    清 理 报 告\necho.\necho   成功: !OK! / 18 项\necho   跳过: !SKIP! / 18 项 (无权限或不存在)\necho.\necho ============================================================\necho                   全 部 清 理 完 成\necho ============================================================\necho.\necho 按任意键退出\npause >nul\nexit /b\n:log\necho %~1\necho      [OK] 完成\necho.\ngoto :eof` }),
+        };
+
+        /* ===================================================
+           ========== DOM 引用 ==========
+           =================================================== */
+        const versionList = document.getElementById('versionList');
+        const gridLayout = document.getElementById('gridLayout');
+        const tileLayout = document.getElementById('tileLayout');
+        const btn1 = document.getElementById('btn1');
+        const isoModal = document.getElementById('isoModal');
+        document.getElementById('btnModalClose').addEventListener('click', closeModal);
+        document.getElementById('btnCopyAll').addEventListener('click', copyAllInfo);
+        document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+        let currentIsoItem = null;
+        let lastFocused = null; // 焦点陷阱：记录打开弹窗前聚焦的元素
+
+        /* ========== 滑动箭头提示逻辑 ========== */
+        (function() {
+            const wrapper = document.querySelector('.tab-group-wrapper');
+            const tabGroup = document.querySelector('.tab-group');
+            const hintRight = document.querySelector('.scroll-hint-right');
+            if (!wrapper || !tabGroup || !hintRight) return;
+            function updateHint() {
+                const nearEnd = (tabGroup.scrollLeft + tabGroup.clientWidth) >= (tabGroup.scrollWidth - 10);
+                hintRight.style.opacity = nearEnd ? '0' : '1';
+                // 同时给左端加个渐变提示（可选）
+                if (tabGroup.scrollLeft > 5) {
+                    wrapper.style.setProperty('--scroll-left', '1');
+                } else {
+                    wrapper.style.setProperty('--scroll-left', '0');
+                }
+            }
+            tabGroup.addEventListener('scroll', updateHint, { passive: true });
+            window.addEventListener('resize', updateHint, { passive: true });
+            // 初始化
+            setTimeout(updateHint, 100);
+        })();
+
+        /* ===================================================
+           ========== localStorage 持久化：复制状态 ==========
+           =================================================== */
+        const COPY_KEY = 'iso_copied_v1'; // v1 = 版本标识，修改结构时递增
+
+        function getCopiedSet() {
+            try { return new Set(JSON.parse(localStorage.getItem(COPY_KEY) || '[]')); }
+            catch { return new Set(); }
+        }
+        function saveCopiedSet(set) {
+            try { localStorage.setItem(COPY_KEY, JSON.stringify([...set])); } catch(e) {}
+        }
+        function markCopied(key) {
+            const s = getCopiedSet();
+            s.add(key);
+            saveCopiedSet(s);
+        }
+        function isCopied(key) {
+            return getCopiedSet().has(key);
+        }
+
+        /* ===================================================
+           ========== Tab 导航 & 无障碍 ==========
+           =================================================== */
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+                loadPage(tab.dataset.type);
+            });
+        });
+
+        /* ===================================================
+           ========== 页面加载 & 列表渲染 ==========
+           =================================================== */
+        window.onload = () => {
+            initCopiedState(); // 从 localStorage 恢复复制状态
+            loadPage('win');
+        };
+
+        function initCopiedState() {
+            // 给已复制的 hash-row 添加持久化样式
+            const copied = getCopiedSet();
+            copied.forEach(key => {
+                const el = document.querySelector(`[data-copy-key="${key}"]`);
+                if (el) {
+                    el.classList.add('copied');
+                    el.innerHTML = '&#x2705; 已复制';
+                    el.style.background = '#d1fae5';
+                    el.style.color = '#065f46';
+                }
+            });
+        }
+
+        function loadPage(type) {
+            const cfg = data[type];
+            versionList.classList.add('hide');
+            gridLayout.classList.add('hide');
+            tileLayout.classList.add('hide');
+            btn1.style.display = 'none';
+
+            if (cfg.mode === 'grid') {
+                gridLayout.classList.remove('hide');
+                loadGrid(cfg.list, type);
+            } else if (cfg.mode === 'tile') {
+                tileLayout.classList.remove('hide');
+                loadTileGrid(cfg.list);
+            } else if (cfg.mode === 'link') {
+                versionList.classList.remove('hide');
+                loadLinkList(cfg.list);
+            } else {
+                versionList.classList.remove('hide');
+                loadRadioList(cfg.list);
+                btn1.style.display = 'block';
+            }
+        }
+
+        function loadRadioList(list) {
+            versionList.innerHTML = '';
+            list.forEach((item, i) => {
+                const label = document.createElement('label');
+                label.className = 'version-item';
+                label.setAttribute('role', 'option');
+                const iconType = item.icon || '';
+                const desc = item.desc || '';
+                const iconHtml = (iconType === 'img' && item.img)
+                    ? `<img src="${item.img}" alt="" aria-hidden="true" />`
+                    : (iconType ? `<span aria-hidden="true">${iconType}</span>` : '');
+                label.innerHTML = `
+                    <input type="radio" name="sel" value="${item.val || item.url}" ${i===0?'checked':''} aria-label="${item.name}${desc ? '：' + desc : ''}">
+                    <span class="tool-icon" aria-hidden="true">${iconHtml}</span>
+                    <div class="tool-info">
+                        <div class="tool-name">${item.name}</div>
+                        ${desc ? `<div class="tool-desc">${desc}</div>` : ''}
+                    </div>
+                `;
+                versionList.appendChild(label);
+            });
+        }
+
+        function loadLinkList(list) {
+            versionList.innerHTML = '';
+            list.forEach((item) => {
+                const div = document.createElement('div');
+                div.className = 'version-item';
+                div.setAttribute('role', 'button');
+                div.setAttribute('tabindex', '0');
+                div.style.cursor = 'pointer';
+                const iconType = item.icon || '';
+                const desc = item.desc || '';
+                const iconHtml = (iconType === 'img' && item.img)
+                    ? `<img src="${item.img}" alt="" aria-hidden="true" />`
+                    : (iconType ? `<span aria-hidden="true">${iconType}</span>` : '');
+                div.innerHTML = `
+                    <span class="tool-icon" aria-hidden="true">${iconHtml}</span>
+                    <div class="tool-info">
+                        <div class="tool-name">${item.name}</div>
+                        ${desc ? `<div class="tool-desc">${desc}</div>` : ''}
+                    </div>
+                `;
+                div.setAttribute('aria-label', item.name + (desc ? '：' + desc : '') + '（新窗口打开）');
+                div.addEventListener('click', () => window.open(item.url, '_blank', 'noopener,noreferrer'));
+                div.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(item.url, '_blank', 'noopener,noreferrer'); } });
+                versionList.appendChild(div);
+            });
+        }
+
+        function loadTileGrid(list) {
+            tileLayout.innerHTML = '';
+            list.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'tile-item';
+                div.setAttribute('role', 'button');
+                div.setAttribute('tabindex', '0');
+                const iconHtml = item.logo
+                    ? `<img src="${item.logo}" alt="" aria-hidden="true" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-box\\' style=\\'font-size:22px;color:#3b82f6\\'></i>'" />`
+                    : '<i class="fas fa-box" style="font-size:22px;color:#3b82f6" aria-hidden="true"></i>';
+                div.innerHTML = `
+                    <div class="tile-icon" aria-hidden="true">${iconHtml}</div>
+                    <div class="tile-name">${item.name}</div>
+                `;
+                div.setAttribute('aria-label', item.name + '（新窗口打开）');
+                div.addEventListener('click', () => window.open(item.url, '_blank', 'noopener,noreferrer'));
+                div.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(item.url, '_blank', 'noopener,noreferrer'); } });
+                tileLayout.appendChild(div);
+            });
+        }
+
+        function loadGrid(list, type) {
+            gridLayout.innerHTML = '';
+            list.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'grid-item';
+                div.setAttribute('role', 'button');
+                div.setAttribute('tabindex', '0');
+                let iconHtml = '';
+                if (item.faIcon) {
+                    const faType = item.faType || 'fas';
+                    iconHtml = `<i class="${faType} ${item.faIcon}" style="font-size:22px;color:${item.faColor||'#3b82f6'}" aria-hidden="true"></i>`;
+                } else if (item.logo) {
+                    iconHtml = `<img src="${item.logo}" alt="" aria-hidden="true" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-box\\' style=\\'font-size:22px;color:#3b82f6\\' aria-hidden=\\'true\\'></i>'" />`;
+                } else {
+                    iconHtml = '<i class="fas fa-box" style="font-size:22px;color:#3b82f6" aria-hidden="true"></i>';
+                }
+                div.innerHTML = `
+                    <div class="grid-icon" aria-hidden="true">${iconHtml}</div>
+                    <div class="grid-item-content">
+                        <div class="grid-name">${item.name}</div>
+                        ${item.desc ? `<div class="grid-desc">${item.desc}</div>` : ''}
+                    </div>
+                `;
+                if (type === 'iso' && item.detail) {
+                    const enterKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openIsoModal(item); } };
+                    div.addEventListener('click', () => openIsoModal(item));
+                    div.addEventListener('keydown', enterKey);
+                } else {
+                    // 无 detail 的才直接跳转
+                    div.setAttribute('aria-label', item.name + (item.desc ? '：' + item.desc : '') + '（新窗口打开）');
+                    div.addEventListener('click', () => window.open(item.url, '_blank', 'noopener,noreferrer'));
+                    div.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(item.url, '_blank', 'noopener,noreferrer'); } });
+                }
+                gridLayout.appendChild(div);
+            });
+        }
+
+        /* ===================================================
+           ========== 镜像模态框逻辑 ==========
+           =================================================== */
+        function openIsoModal(item) {
+            currentIsoItem = item;
+            document.getElementById('modalIcon').textContent = item.detail.icon || '💿';
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalSubtitle').textContent = item.desc + ' · 来源：我的MSDN (imsdn.cn)';
+
+            const verContainer = document.getElementById('modalVersions');
+            verContainer.innerHTML = '';
+            item.detail.versions.forEach((v) => {
+                const div = document.createElement('div');
+                div.className = 'iso-ver-item';
+
+                // 下载按钮组
+                let dlBtnHtml = '';
+                if (v.ed2k) {
+                    dlBtnHtml = `<div class="dl-btn-group">
+                        <a href="javascript:void(0)" class="btn-dl btn-dl-ed2k" data-url="${v.ed2k}" aria-label="使用 ed2k 协议下载镜像"><i class="fas fa-download" aria-hidden="true"></i> ed2k下载</a>
+                        <a href="javascript:void(0)" class="btn-dl btn-dl-copy" aria-label="复制 ed2k 链接" data-copy-key="${v.ed2k}" data-url="${v.ed2k}"><i class="fas fa-copy" aria-hidden="true"></i> 复制</a>
+                        ${v.msdl ? `<a href="${v.msdl}" target="_blank" rel="noopener noreferrer" class="btn-dl btn-dl-ms" aria-label="微软官方下载"><i class="fab fa-microsoft" aria-hidden="true"></i> 官方</a>` : ''}
+                    </div>`;
+                } else if (v.dl || v.msdl) {
+                    const dlUrl = v.dl || v.msdl;
+                    const isMsdl = !!(dlUrl && dlUrl.includes('microsoft.com'));
+                    const btnText = isMsdl ? '微软官方' : '获取下载';
+                    dlBtnHtml = `<div class="dl-btn-group">
+                        <a href="${dlUrl}" target="_blank" rel="noopener noreferrer" class="btn-dl ${isMsdl ? 'btn-dl-ms' : 'btn-dl-hw'}" aria-label="${btnText}下载"><i class="fas fa-external-link-alt" aria-hidden="true"></i> ${btnText}</a>
+                    </div>`;
+                }
+
+                // 文件名（从 data 属性读取，避免内联 onclick）
+                const shortName = v.file && v.file.length > 50 ? v.file.substring(0, 50) + '...' : (v.file || '');
+                const fileHtml = v.file ? `<div class="hash-row" data-copy-target="${v.file}" data-copy-key="${v.file}" tabindex="0" role="button" aria-label="点击复制文件名：${v.file}"><i class="fas fa-file-code" aria-hidden="true"></i> <span style="font-size:10px">${shortName}</span></div>` : '';
+
+                // 校验值（使用 data-* 属性存储完整值）
+                let hashHtml = '';
+                const sha256Key = 'sha256-' + Math.random().toString(36).substr(2, 8);
+                const sha1Key = 'sha1-' + Math.random().toString(36).substr(2, 8);
+                if (v.sha256) {
+                    hashHtml += `<div class="hash-row" data-copy-target="${v.sha256}" data-copy-key="${sha256Key}" data-label="SHA256" tabindex="0" role="button" aria-label="点击复制 SHA256 校验值"><i class="fas fa-fingerprint" aria-hidden="true"></i> SHA256: <span>${v.sha256.substring(0,20)}...</span></div>`;
+                }
+                if (v.sha1 && v.sha1 !== '见页面确认' && v.sha1 !== '见微软评估中心') {
+                    hashHtml += `<div class="hash-row" data-copy-target="${v.sha1}" data-copy-key="${sha1Key}" data-label="SHA1" tabindex="0" role="button" aria-label="点击复制 SHA1 校验值"><i class="fas fa-fingerprint" aria-hidden="true"></i> SHA1: <span>${v.sha1.substring(0,16)}...</span></div>`;
+                }
+
+                div.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+                        <div style="flex:1;min-width:0;">
+                            <div class="iso-ver-name">${v.name}</div>
+                            <div class="iso-ver-meta">
+                                <span><i class="fas fa-hdd" aria-hidden="true"></i> ${v.size}</span>
+                            </div>
+                            ${fileHtml}
+                            ${hashHtml}
+                        </div>
+                        ${dlBtnHtml}
+                    </div>
+                `;
+                verContainer.appendChild(div);
+            });
+
+            // 绑定复制事件（data-* 属性驱动，支持 localStorage 持久化）
+            verContainer.querySelectorAll('[data-copy-target]').forEach(el => {
+                const target = el.dataset.copyTarget;
+                const key = el.dataset.copyKey;
+                const label = el.dataset.label || '内容';
+
+                // 恢复 localStorage 中的"已复制"状态
+                if (isCopied(key)) {
+                    el.classList.add('copied');
+                    el.innerHTML = el.innerHTML.replace(/<i[^>]*aria-hidden="true"[^>]*><\/i>\s*\S+.*/, `<i class="fas fa-check" aria-hidden="true"></i> `) + '';
+                    el.querySelector('i') && el.classList.contains('copied') && (el.innerHTML = `&#x2705; 已复制`);
+                    el.style.background = '#d1fae5';
+                    el.style.color = '#065f46';
+                }
+
+                const handleCopy = () => {
+                    navigator.clipboard.writeText(target).then(() => {
+                        markCopied(key);
+                        const orig = el.innerHTML;
+                        el.innerHTML = '&#x2705; 已复制 ' + (label ? label : '');
+                        el.style.background = '#d1fae5';
+                        el.style.color = '#065f46';
+                        el.classList.add('copied');
+                        setTimeout(() => {
+                            el.innerHTML = orig;
+                            el.style.background = '';
+                            el.style.color = '';
+                            el.classList.remove('copied');
+                        }, 2000);
+                    }).catch(() => {
+                        window.prompt('浏览器不支持自动复制，请手动选择以下内容复制：', target);
+                    });
+                };
+                el.addEventListener('click', handleCopy);
+                el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCopy(); } });
+            });
+
+            // 绑定 ed2k 下载/复制按钮
+            verContainer.querySelectorAll('.btn-dl-ed2k').forEach(btn => {
+                const ed2k = btn.dataset.url;
+                btn.addEventListener('click', () => triggerEd2k(ed2k, btn));
+            });
+            verContainer.querySelectorAll('.btn-dl-copy').forEach(btn => {
+                btn.addEventListener('click', () => copyEd2k(btn, btn.dataset.copyKey || ''));
+            });
+
+            // ========== 焦点陷阱（Focus Trap）==========
+            lastFocused = document.activeElement;
+            isoModal.classList.add('active');
+            // 聚焦到弹窗标题
+            setTimeout(() => {
+                const closeBtn = isoModal.querySelector('.modal-close');
+                if (closeBtn) closeBtn.focus();
+            }, 50);
+        }
+
+        function closeModal() {
+            isoModal.classList.remove('active');
+            // 焦点恢复到打开弹窗前的元素
+            if (lastFocused && lastFocused.focus) {
+                setTimeout(() => lastFocused.focus(), 50);
+            }
+        }
+
+        // 点击遮罩层关闭
+        isoModal.addEventListener('click', (e) => {
+            if (e.target === isoModal) closeModal();
+        });
+
+        // ESC 关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isoModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // 焦点陷阱：Tab 循环
+        isoModal.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+            const focusable = isoModal.querySelectorAll(
+                'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+            } else {
+                if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        });
+
+        /* ===================================================
+           ========== 复制全部信息 ==========
+           =================================================== */
+        function copyAllInfo() {
+            if (!currentIsoItem) return;
+            let text = `【${currentIsoItem.name}】${currentIsoItem.desc}\n`;
+            text += `来源：我的MSDN (imsdn.cn)\n${'='.repeat(40)}\n\n`;
+            currentIsoItem.detail.versions.forEach((v, i) => {
+                text += `${i+1}. ${v.name}\n   大小: ${v.size}\n`;
+                if (v.file) text += `   文件: ${v.file}\n`;
+                if (v.sha1 && v.sha1 !== '见微软评估中心') text += `   SHA1: ${v.sha1}\n`;
+                if (v.sha256) text += `   SHA256: ${v.sha256}\n`;
+                if (v.ed2k) text += `   ed2k: ${v.ed2k}\n`;
+                if (v.dl) text += `   下载: ${v.dl}\n`;
+                text += '\n';
+            });
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('[onclick="copyAllInfo()"]');
+                if (btn) {
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> 已复制！';
+                    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+                }
+            }).catch(() => {
+                window.prompt('请手动复制以下信息：', text);
+            });
+        }
+
+        /* ===================================================
+           ========== ed2k 触发 + 复制 ==========
+           =================================================== */
+        function triggerEd2k(ed2kUrl, btnEl) {
+            if (!ed2kUrl) return;
+            // 逐次尝试三种方式
+            try { window.location.href = ed2kUrl; } catch(e) {}
+            setTimeout(() => {
+                try {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = ed2kUrl;
+                    document.body.appendChild(iframe);
+                    setTimeout(() => document.body.removeChild(iframe), 3000);
+                } catch(e) {}
+            }, 100);
+            setTimeout(() => { try { window.open(ed2kUrl, '_self'); } catch(e) {} }, 200);
+
+            // 按钮加载动画
+            if (btnEl) {
+                const orig = btnEl.innerHTML;
+                btnEl.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> 正在唤起...';
+                btnEl.style.opacity = '0.7';
+                setTimeout(() => {
+                    btnEl.innerHTML = orig;
+                    btnEl.style.opacity = '1';
+                }, 1500);
+            }
+        }
+
+        function copyEd2k(btn, ed2kKey) {
+            const ed2kUrl = btn.dataset.url || '';
+            if (!ed2kUrl) return;
+            navigator.clipboard.writeText(ed2kUrl).then(() => {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> 已复制';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+            }).catch(() => {
+                window.prompt('请复制以下 ed2k 链接：', ed2kUrl);
+            });
+        }
+
+        /* ===================================================
+           ========== 脚本生成（配置驱动）==========
+           =================================================== */
+        btn1.addEventListener('click', generateBat);
+
+        function generateBat() {
+            const val = document.querySelector('input[name="sel"]:checked')?.value;
+            if (!val) return;
+
+            const tpl = scriptTemplates[val];
+            if (tpl) {
+                const { fileName, content } = tpl();
+
+                // 统一转为 CRLF + UTF-8 BOM + chcp 65001（完美支持中文）
+                let normalizedContent = content.replace(/\r?\n/g, '\r\n');
+                // 自动注入 chcp 65001（UTF-8）到 @echo off 之后
+                if (normalizedContent.startsWith('@echo off')) {
+                    normalizedContent = '@echo off\r\nchcp 65001 >nul' + normalizedContent.slice(9);
+                }
+                const BOM = '\uFEFF';
+                const blob = new Blob([BOM + normalizedContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                // 2️⃣ 同时复制脚本内容到剪贴板（解决 SmartScreen 阻拦问题）
+                navigator.clipboard.writeText(normalizedContent).then(() => {
+                    showCopyTip();
+                }).catch(() => {
+                    // 剪贴板 API 失败时仅显示下载成功
+                    const orig = btn1.textContent;
+                    btn1.textContent = '✅ 已下载！如被拦截请右键属性→解除锁定';
+                    btn1.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                    btn1.style.opacity = '0.9';
+                    setTimeout(() => { btn1.textContent = orig; btn1.style.background = ''; btn1.style.opacity = '1'; }, 4000);
+                });
+
+            } else if (val.startsWith('http')) {
+                window.open(val, '_blank', 'noopener,noreferrer');
+            }
+        }
+
+        /* ========== 复制成功提示弹窗 ========== */
+        function showCopyTip() {
+            const tipId = 'copy-tip-overlay';
+            if (document.getElementById(tipId)) return; // 防重复
+
+            const overlay = document.createElement('div');
+            overlay.id = tipId;
+            overlay.innerHTML = `
+<div id="copyTipBackdrop" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;justify-content:center;align-items:center;">
+    <div style="background:#fff;border-radius:16px;padding:28px 32px;max-width:440px;width:90%;box-shadow:0 25px 80px rgba(0,0,0,.3);animation:tipIn .3s ease;text-align:center;">
+        <div style="font-size:48px;margin-bottom:8px;">✅</div>
+        <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">脚本已复制到剪贴板！</div>
+        <div style="font-size:12px;color:#f59e0b;margin-bottom:14px;">⚠️ 如下载文件被 SmartScreen 拦截，请用下方粘贴方案</div>
+
+        <div style="text-align:left;font-size:13px;color:#333;line-height:2.2;margin:0 0 14px;padding:16px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
+            <b style="display:inline-block;background:#22c55e;color:white;font-size:11px;padding:1px 8px;border-radius:4px;margin-right:4px;">推荐</b><b>粘贴法（免拦截）：</b><br>
+            ① 新建文本文档 → 粘贴（Ctrl+V）<br>
+            ② 文件 → 另存为 → <code style="background:#e5e7eb;padding:1px 5px;border-radius:3px;font-size:12px;">激活.bat</code>（编码选 <b>UTF-8</b>，带 BOM）<br>
+            ③ 右键文件 → <b>以管理员身份运行</b>
+        </div>
+
+        <details style="text-align:left;font-size:12px;color:#888;line-height:1.8;margin:0;padding:10px 14px;background:#fefce8;border-radius:8px;border:1px solid #fde68a;cursor:pointer;">
+            <summary style="font-weight:600;color:#92400e;outline:none;">📥 下载文件被拦截？解除方法</summary>
+            <p style="margin:8px 0 0;color:#666;">右键 .bat 文件 → <b>属性</b> → 勾选最下方 <b>「解除锁定」</b> → 确定 → 再双击运行即可。</p>
+        </details>
+
+        <button id="copyTipCloseBtn" style="width:100%;padding:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;">知道了</button>
+    </div>
+</div>
+<style>@keyframes tipIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}</style>`;
+            document.body.appendChild(overlay);
+            document.getElementById('copyTipBackdrop').addEventListener('click', function() { this.remove(); });
+            document.getElementById('copyTipCloseBtn').addEventListener('click', function() { document.getElementById('copyTipBackdrop').remove(); });
+
+            // 下载按钮反馈
+            const orig = btn1.textContent;
+            btn1.textContent = '✅ 已下载 + 已复制！';
+            btn1.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+            btn1.style.opacity = '0.9';
+            setTimeout(() => { btn1.textContent = orig; btn1.style.background = ''; btn1.style.opacity = '1'; }, 3000);
+        }
+
+        /* ===================================================
+           ========== 广告轮播逻辑 ==========
+           =================================================== */
+        (function() {
+            const track = document.getElementById('adTrack');
+            const dotsContainer = document.getElementById('adDots');
+            if (!track || !dotsContainer) return;
+            const slides = track.querySelectorAll('.ad-slide');
+            if (slides.length <= 1) return;
+
+            let current = 0;
+            let timer = null;
+            const interval = 3500; // 3.5秒切换
+
+            // 生成指示器
+            slides.forEach(function(_, i) {
+                var dot = document.createElement('button');
+                dot.className = 'ad-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', '广告 ' + (i + 1));
+                dot.addEventListener('click', function() { goTo(i); });
+                dotsContainer.appendChild(dot);
+            });
+
+            function goTo(index) {
+                current = index;
+                track.style.transform = 'translateX(-' + (current * 100) + '%)';
+                var dots = dotsContainer.querySelectorAll('.ad-dot');
+                dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+            }
+
+            function next() {
+                goTo((current + 1) % slides.length);
+            }
+
+            // 自动播放
+            function startAuto() { timer = setInterval(next, interval); }
+            function stopAuto() { clearInterval(timer); }
+
+            // 鼠标悬停暂停
+            var carouselEl = document.querySelector('.ad-carousel');
+            if (carouselEl) {
+                carouselEl.addEventListener('mouseenter', stopAuto, { passive: true });
+                carouselEl.addEventListener('mouseleave', startAuto, { passive: true });
+            }
+
+            // 启动轮播
+            startAuto();
+        })();
+    </script>
+</body>
+</html>
